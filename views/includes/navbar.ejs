@@ -2,7 +2,8 @@
   .search-btn{
     background-color: #fe434d;
     color: #fff;
-    border-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
     padding: 0 1rem 0 1rem;
   }
   .search-btn:hover{
@@ -14,10 +15,21 @@
     margin-right: 0.5rem;
   }
   .search-inp{
-    border-radius: 25px;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
     padding: 0.5rem 3rem 0.5rem 3rem;
     /* font-size: 1rem; */
   }
+
+  @media (max-width: 768px) {
+  .navbar-collapse {
+    background-color: #f8f9fa  !important;  /* matches Bootstrap light gray */
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+}
+
 </style>
 
 <nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
@@ -35,7 +47,7 @@
 
       <div class="navbar-nav ms-auto">
          <form class="d-flex" role="search">
-            <input class="form-control me-2 search-inp" type="search" placeholder="Search Destinations"/>
+            <input class="form-control search-inp" type="search" placeholder="Search Destinations"/>
             <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
           </form>
       </div>
