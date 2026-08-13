@@ -1,66 +1,38 @@
-<style>
-  .search-btn{
-    background-color: #fe434d;
-    color: #fff;
-    border-top-right-radius: 25px;
-    border-bottom-right-radius: 25px;
-    padding: 0 1rem 0 1rem;
-  }
-  .search-btn:hover{
-    background-color: #fe434d;
-    color: #fff;
-  }
-  .search-btn i{
-    display: inline;
-    margin-right: 0.5rem;
-  }
-  .search-inp{
-    border-top-left-radius: 25px;
-    border-bottom-left-radius: 25px;
-    padding: 0.5rem 3rem 0.5rem 3rem;
-    /* font-size: 1rem; */
-  }
+<nav class="navbar navbar-expand-md bg-white sticky-top">
+  <div class="container-xl">
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-regular fa-compass"></i>
+      <span class="brand-name">Wanderlust</span>
+    </a>
 
-  @media (max-width: 768px) {
-  .navbar-collapse {
-    background-color: #f8f9fa  !important;  /* matches Bootstrap light gray */
-    padding: 1rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-}
-
-</style>
-
-<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings"><i class="fa-regular fa-compass"></i></a>
-    
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings">Explore</a>
-      </div>
+      <form class="d-flex search-form" role="search" action="/listings" method="GET">
+        <div class="search-pill">
+          <input
+            class="form-control search-inp"
+            type="search"
+            name="q"
+            value="<%= locals.searchQuery || '' %>"
+            placeholder="Search destinations"
+            aria-label="Search destinations"
+          />
+          <button class="btn search-btn" type="submit">
+            <i class="fa-solid fa-magnifying-glass"></i>Search
+          </button>
+        </div>
+      </form>
 
-      <div class="navbar-nav ms-auto">
-         <form class="d-flex" role="search">
-            <input class="form-control search-inp" type="search" placeholder="Search Destinations"/>
-            <button class="btn search-btn" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Search</button>
-          </form>
-      </div>
-
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link" href="/listings/new">Airbnb your home</a>
+      <div class="navbar-nav ms-auto align-items-md-center">
+        <a class="nav-link nav-host" href="/listings/new">Wanderlust your home</a>
         <% if(!currUser){ %>
-          <a class="nav-link" aria-current="page" href="/signup"><b>Sign up</b></a>
-          <a class="nav-link" href="/login"><b>Login</b></a>
-        <% } %>
-        
-        <% if(currUser){ %>
-        <a class="nav-link" href="/logout"><b>Logout</b></a>
+          <a class="nav-link" href="/signup">Sign up</a>
+          <a class="nav-link" href="/login">Log in</a>
+        <% } else { %>
+          <a class="nav-link" href="/logout">Log out</a>
         <% } %>
       </div>
     </div>
