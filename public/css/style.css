@@ -237,33 +237,53 @@ body {
 
 /* Listing cards */
 .listing-grid {
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 1.75rem;
+    --bs-gutter-x: 2.5rem;
+    --bs-gutter-y: 2.5rem;
+    display: flex;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1.5rem;
 }
 
+.listing-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.listing-grid > .col {
+    scroll-snap-align: center;
+}
+
+/* Specific overrides for mobile */
 @media (max-width: 768px) {
     .listing-grid {
-        display: flex;
-        flex-wrap: nowrap !important;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        padding-bottom: 1.5rem;
         margin-left: -0.5rem;
         margin-right: -0.5rem;
         padding-left: 0.5rem;
         padding-right: 0.5rem;
     }
     
-    .listing-grid::-webkit-scrollbar {
-        display: none;
+    .listing-grid > .col {
+        flex: 0 0 40% !important; /* Slightly larger than 31% so they aren't unreadable, but still shows multiple */
+        width: 40% !important;
+        max-width: 40% !important;
+        min-width: 150px !important;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    .listing-card .card-title {
+        font-size: 0.8rem !important;
     }
     
-    .listing-grid > .col {
-        flex: 0 0 85% !important;
-        width: 85% !important;
-        max-width: 85% !important;
-        scroll-snap-align: center;
+    .listing-card .card-location, .listing-card .card-price {
+        font-size: 0.75rem !important;
+    }
+    
+    .listing-card .badge {
+        font-size: 0.6rem !important;
+        padding: 0.2rem 0.5rem !important;
     }
 }
 
