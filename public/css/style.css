@@ -98,11 +98,22 @@ body {
     transform: scale(1.01);
 }
 
-.search-inp {
+.search-pill .search-inp {
     border: none !important;
+    outline: none !important;
+    background-color: transparent !important;
     box-shadow: none !important;
     padding: 0.65rem 1.25rem !important;
     font-size: 0.9rem;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.search-pill .search-inp:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background-color: transparent !important;
 }
 
 .search-btn {
@@ -137,10 +148,6 @@ body {
     .search-form {
         max-width: 100%;
         margin: 0.75rem 0;
-    }
-
-    .brand-name {
-        display: none;
     }
 }
 
@@ -232,6 +239,32 @@ body {
 .listing-grid {
     --bs-gutter-x: 1.5rem;
     --bs-gutter-y: 1.75rem;
+}
+
+@media (max-width: 768px) {
+    .listing-grid {
+        display: flex;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 1.5rem;
+        margin-left: -0.5rem;
+        margin-right: -0.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .listing-grid::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .listing-grid > .col {
+        flex: 0 0 85% !important;
+        width: 85% !important;
+        max-width: 85% !important;
+        scroll-snap-align: center;
+    }
 }
 
 .listing-link {
@@ -499,6 +532,7 @@ body {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);

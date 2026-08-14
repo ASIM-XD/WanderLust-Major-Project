@@ -2,24 +2,19 @@
   <div class="container-xl">
     <a class="navbar-brand" href="/listings">
       <i class="fa-regular fa-compass"></i>
-      <span class="brand-name">Wanderlust</span>
+      <span class="brand-name" style="display: block !important;">Wanderlust</span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <form class="d-flex search-form" role="search" action="/listings" method="GET">
         <div class="search-pill">
-          <input
-            class="form-control search-inp"
-            type="search"
-            name="q"
-            value="<%= locals.searchQuery || '' %>"
-            placeholder="Search destinations"
-            aria-label="Search destinations"
-          />
+          <input class="search-inp w-100" type="search" name="q" value="<%= locals.searchQuery || '' %>"
+            placeholder="Search destinations" aria-label="Search destinations" />
           <button class="btn search-btn" type="submit">
             <i class="fa-solid fa-magnifying-glass"></i>Search
           </button>
@@ -31,10 +26,63 @@
         <% if(!currUser){ %>
           <a class="nav-link" href="/signup">Sign up</a>
           <a class="nav-link" href="/login">Log in</a>
-        <% } else { %>
-          <a class="nav-link" href="/logout">Log out</a>
-        <% } %>
+          <% } else { %>
+            <a class="nav-link" href="/logout">Log out</a>
+            <% } %>
       </div>
     </div>
   </div>
 </nav>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchForm = document.querySelector('.search-form');
+    const searchInp = document.querySelector('.search-inp');
+    let debounceTimer;
+
+    if (searchInp && searchForm) {
+      searchInp.addEventListener('input', function (e) {
+        // Only do dynamic search if we are on the listings index page
+        if (window.location.pathname === '/listings' || window.location.pathname === '/') {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(() => {
+            const query = e.target.value;
+            const url = new URL(searchForm.action, window.location.origin);
+            if (query) url.searchParams.set('q', query);
+
+            fetch(url)
+              .then(res => res.text())
+              .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const newContainer = doc.getElementById('listings-main-container');
+                const oldContainer = document.getElementById('listings-main-container');
+                if (newContainer && oldContainer) {
+                  oldContainer.innerHTML = newContainer.innerHTML;
+                }
+
+                const newMeta = doc.getElementById('search-meta-container');
+                const oldMeta = document.getElementById('search-meta-container');
+                if (newMeta && oldMeta) {
+                  oldMeta.innerHTML = newMeta.innerHTML;
+                }
+
+                // Re-apply tax toggle logic for the newly inserted elements
+                let taxSwitch = document.getElementById("switchCheckDefault");
+                if (taxSwitch) {
+                  taxSwitch.addEventListener("click", () => {
+                    let taxInfo = document.getElementsByClassName("tax-info");
+                    for (let info of taxInfo) {
+                      info.style.display = info.style.display === "inline" ? "none" : "inline";
+                    }
+                  });
+                }
+              })
+              .catch(err => console.error(err));
+          }, 300);
+        }
+      });
+    }
+  });
+</script>

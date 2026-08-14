@@ -11,7 +11,25 @@ module.exports.index = async (req,res)=>{
         filter = { category: categoryQuery };
     }
     const allListings = await Listing.find(filter);
-    res.render("listings/index.ejs", { allListings, pageMeta: { searchQuery, categoryQuery } });
+
+    // Group listings by city (extracted from location)
+    const groupedListings = {};
+    for (let listing of allListings) {
+        const locationParts = (listing.location || "").split(",");
+        const city = locationParts[0].trim();
+        const groupName = city ? city : "Other Destinations";
+        
+        if (!groupedListings[groupName]) {
+            groupedListings[groupName] = [];
+        }
+        groupedListings[groupName].push(listing);
+    }
+
+    res.render("listings/index.ejs", { 
+        allListings, 
+        groupedListings, 
+        pageMeta: { searchQuery, categoryQuery } 
+    });
 }
 
 module.exports.renderNewForm = (req,res)=>{
