@@ -1,4 +1,4 @@
-# 🌍 Wanderlust
+# <img src="public/favicon.svg" alt="Wanderlust Logo" width="35" align="top"> Wanderlust
 
 Wanderlust is a full-stack web application designed for booking and managing travel accommodations, heavily inspired by platforms like Airbnb. It allows users to browse listings, view destinations on a map, leave reviews, and even host their own properties.
 
