@@ -5,7 +5,12 @@ const {listingSchema,reviewSchema} = require("./schema.js");
 
 module.exports.isLoggedIn = (req,res,next) =>{
     if(!req.isAuthenticated()){
-        req.session.redirectUrl = req.originalUrl;
+        // Prevent "Cannot GET /listings/:id/like" after login by redirecting to /listings
+        if (req.originalUrl.match(/\/listings\/.*\/like/)) {
+            req.session.redirectUrl = "/listings";
+        } else {
+            req.session.redirectUrl = req.originalUrl;
+        }
         req.flash("error","You must be logged in!")
         return res.redirect("/login");
     }

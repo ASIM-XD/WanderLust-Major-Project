@@ -77,12 +77,18 @@
     </div>
 </div>
 
-<div id="search-meta-container" class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-    <% if (typeof pageMeta !== 'undefined' && pageMeta.searchQuery) { %>
-        <p class="search-meta mb-0"><%= allListings.length %> stay<%= allListings.length === 1 ? "" : "s" %> for “<%= pageMeta.searchQuery %>”</p>
-    <% } else { %>
-        <p class="search-meta mb-0"></p>
-    <% } %>
+<div id="search-meta-container" class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 mb-3">
+    <div class="d-flex align-items-center gap-3">
+        <a href="<%= typeof pageMeta !== 'undefined' && pageMeta.likedQuery ? '/listings' : '/listings?liked=true' %>" style="text-decoration: none;">
+            <div class="px-3 py-2 rounded-pill d-flex align-items-center gap-2 shadow-sm <%= typeof pageMeta !== 'undefined' && pageMeta.likedQuery ? 'bg-dark text-white border-dark' : 'bg-white text-dark border' %>" style="transition: all 0.3s ease; cursor: pointer;" onmouseover="this.classList.add('shadow')" onmouseout="this.classList.remove('shadow')">
+                <i class="fa-solid fa-heart" style="color: #ff385c;"></i>
+                <span class="fw-medium" style="font-size: 0.95rem;">Liked</span>
+            </div>
+        </a>
+        <% if (typeof pageMeta !== 'undefined' && pageMeta.searchQuery) { %>
+            <p class="search-meta mb-0"><%= allListings.length %> stay<%= allListings.length === 1 ? "" : "s" %> for “<%= pageMeta.searchQuery %>”</p>
+        <% } %>
+    </div>
     <div class="tax-toggle mb-0">
         <label class="bor" for="switchCheckDefault">
             <span class="me-3">Display total after taxes</span>
@@ -109,7 +115,17 @@
                                     <img src="<%=listing.image.url%>" class="card-img-top" alt="<%= listing.title %>">
                                     <div class="position-absolute top-0 start-0 w-100 p-2 d-flex justify-content-between align-items-start">
                                         <span class="badge text-dark rounded-pill shadow-sm px-2 py-1 fw-semibold" style="background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.4);">Guest favourite</span>
-                                        <i class="fa-regular fa-heart text-white fs-5" style="filter: drop-shadow(0px 1px 3px rgba(0,0,0,0.6)); cursor: pointer; transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></i>
+                                        <% 
+                                        let isLiked = false;
+                                        if (currUser && currUser.likedListings && currUser.likedListings.includes(listing._id)) {
+                                            isLiked = true;
+                                        }
+                                        %>
+                                        <i class="<%= isLiked ? 'fa-solid' : 'fa-regular' %> fa-heart fs-5 like-btn" 
+                                           data-id="<%=listing._id%>"
+                                           style="color: <%= isLiked ? '#ff385c' : 'white' %>; filter: drop-shadow(0px 1px 3px rgba(0,0,0,0.6)); cursor: pointer; transition: transform 0.2s ease, color 0.2s ease;" 
+                                           onmouseover="this.style.transform='scale(1.1)'" 
+                                           onmouseout="this.style.transform='scale(1)'"></i>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -144,5 +160,44 @@
         for (let info of taxInfo) {
             info.style.display = info.style.display === "inline" ? "none" : "inline";
         }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const likeBtns = document.querySelectorAll(".like-btn");
+        likeBtns.forEach(btn => {
+            btn.addEventListener("click", async (e) => {
+                e.preventDefault(); // Prevent navigating to the listing link since it's inside an <a> tag
+                e.stopPropagation(); // Stop event bubbling to the parent <a> tag
+                const listingId = btn.getAttribute("data-id");
+                try {
+                    const response = await fetch(`/listings/${listingId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.redirected) {
+                        window.location.href = response.url; // Handle redirect to login
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        if (data.liked) {
+                            btn.classList.remove('fa-regular');
+                            btn.classList.add('fa-solid');
+                            btn.style.color = '#ff385c';
+                        } else {
+                            btn.classList.remove('fa-solid');
+                            btn.classList.add('fa-regular');
+                            btn.style.color = 'white';
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error toggling like:", error);
+                }
+            });
+        });
     });
 </script>

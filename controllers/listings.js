@@ -3,6 +3,7 @@ const Listing = require("../models/listing");
 module.exports.index = async (req,res)=>{
     const searchQuery = (req.query.q || "").trim();
     const categoryQuery = req.query.category || "";
+    const likedQuery = req.query.liked === "true";
     let filter = {};
     if (searchQuery) {
         const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
@@ -10,6 +11,11 @@ module.exports.index = async (req,res)=>{
     } else if (categoryQuery) {
         filter = { category: categoryQuery };
     }
+
+    if (likedQuery && req.user) {
+        filter._id = { $in: req.user.likedListings };
+    }
+
     const allListings = await Listing.find(filter);
 
     // Group listings by city (extracted from location)
@@ -28,7 +34,7 @@ module.exports.index = async (req,res)=>{
     res.render("listings/index.ejs", { 
         allListings, 
         groupedListings, 
-        pageMeta: { searchQuery, categoryQuery } 
+        pageMeta: { searchQuery, categoryQuery, likedQuery } 
     });
 }
 
@@ -95,4 +101,28 @@ module.exports.destroyListing = async (req,res)=>{
     console.log(deletedListing);
     req.flash("success","Listing Deleted!");
     res.redirect("/listings");
+}
+
+module.exports.toggleLike = async (req, res) => {
+    const { id } = req.params;
+    const user = req.user;
+    
+    if (!user) {
+        return res.status(401).json({ success: false, message: "You must be logged in to like a listing." });
+    }
+
+    const User = require("../models/user.js"); // Require here or at the top
+    const currentUser = await User.findById(user._id);
+
+    const hasLiked = currentUser.likedListings.includes(id);
+
+    if (hasLiked) {
+        // Remove like
+        await User.findByIdAndUpdate(user._id, { $pull: { likedListings: id } });
+        res.json({ success: true, liked: false });
+    } else {
+        // Add like
+        await User.findByIdAndUpdate(user._id, { $addToSet: { likedListings: id } });
+        res.json({ success: true, liked: true });
+    }
 }

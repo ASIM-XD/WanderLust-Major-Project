@@ -7,7 +7,13 @@ const userSchema = new Schema({
     email:{
         type: String,
         required: true
-    }
+    },
+    likedListings: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Listing"
+        }
+    ]
     //automatically takes username and password field
 });
 

@@ -24,4 +24,7 @@ router.route("/:id")
 //edit route
 router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.renderEditForm));
 
+//like route
+router.post("/:id/like", isLoggedIn, wrapAsync(listingController.toggleLike));
+
 module.exports = router;
