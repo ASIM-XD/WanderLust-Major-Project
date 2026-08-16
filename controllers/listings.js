@@ -5,15 +5,21 @@ module.exports.index = async (req,res)=>{
     const categoryQuery = req.query.category || "";
     const likedQuery = req.query.liked === "true";
     let filter = {};
-    if (searchQuery) {
-        const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
-        filter = { $or: [{ title: regex }, { location: regex }, { country: regex }] };
-    } else if (categoryQuery) {
-        filter = { category: categoryQuery };
+
+    if (likedQuery) {
+        if (!req.user) {
+            req.session.redirectUrl = req.originalUrl;
+            req.flash("error", "Please log in to view your liked listings.");
+            return res.redirect("/login");
+        }
+        filter._id = { $in: req.user.likedListings };
     }
 
-    if (likedQuery && req.user) {
-        filter._id = { $in: req.user.likedListings };
+    if (searchQuery) {
+        const regex = new RegExp(searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+        filter = { ...filter, $or: [{ title: regex }, { location: regex }, { country: regex }] };
+    } else if (categoryQuery) {
+        filter.category = categoryQuery;
     }
 
     const allListings = await Listing.find(filter);
